@@ -1,6 +1,7 @@
 from pathlib import Path
-from typing import Callable, Optional, Union
+from typing import Callable, Optional
 
+import h5py
 import torch
 from torchvision.datasets.vision import VisionDataset
 from torchvision.models.detection import fasterrcnn_resnet50_fpn
@@ -9,7 +10,7 @@ from torchvision.models.detection import fasterrcnn_resnet50_fpn
 class TokamDataset(VisionDataset):
     def __init__(
         self,
-        root: Union[str, Path] = None,  # type: ignore[assignment]
+        root: Path = None,  # type: ignore[assignment]
         transforms: Optional[Callable] = None,
         transform: Optional[Callable] = None,
         target_transform: Optional[Callable] = None,
@@ -21,6 +22,28 @@ class TokamDataset(VisionDataset):
             transform=transform,
             target_transform=target_transform,
         )
+
+        self.load_images()
+        self.extract_annotations()
+
+    def load_images(self):
+        data_files = list(self.root.glob("*.h5"))
+        file_path = data_files[-1]
+        with h5py.File(file_path) as f:
+            self.images = torch.tensor(f["density"])
+
+        self.num_frames = self.images.shape[0]
+        self.image_width = self.images.shape[2]
+        self.image_height = self.images.shape[1]
+
+    def extract_annotations(self):
+        self.label_files = list(self.root.glob("*.xml"))
+
+    def __getitem__(self, index: int):
+        pass
+
+    def __len__(self):
+        return len(self.images)
 
 
 def make_dataset(training_dir):
