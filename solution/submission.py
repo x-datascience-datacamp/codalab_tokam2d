@@ -4,21 +4,35 @@ from xml.etree.ElementTree import Element
 
 import h5py
 import torch
+from defusedxml.ElementTree import parse
 from torchvision.datasets.vision import VisionDataset
 from torchvision.models.detection import fasterrcnn_resnet50_fpn
 from torchvision.tv_tensors import BoundingBoxes
 
 
-class XmlLoader:
+class XMLLoader:
     def __init__(self, path: Path, image_width: int, image_height: int):
         self.path = path
 
     def __call__(self):
-        pass
+        tree = parse(self.path)
+        root = tree.getroot()
+        return dict(self.xml_to_tv_tensor(element for element in root.findall("image")))
 
-    def xml_to_tv_tensor(self, element: Element) -> BoundingBoxes:
-        pass
+    def xml_to_tv_tensor(self, element: Element) -> tuple[int, BoundingBoxes]:
+        width = int(element.attrib["width"])
+        height = int(element.attrib["height"])
+        frame_index = int(element.attrib["name"].split(".")[0])
 
+        bbox_tensor = BoundingBoxes(
+            [self.xml_to_bbox(xml_bbox) for xml_bbox in element],
+            format="XYXY",
+            canvas_size=(height, width),
+            dtype=torch.float32,
+        )
+        return frame_index, bbox_tensor
+
+    @staticmethod
     def xml_to_bbox(self, element: Element) -> torch.Tensor:
         info_dict = element.attrib
         xmin = float(info_dict["xtl"])
