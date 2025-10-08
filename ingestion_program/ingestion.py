@@ -1,12 +1,21 @@
 import json
 import sys
 import time
-import pandas as pd
 from pathlib import Path
 
 import numpy as np
+import pandas as pd
+import torch
 
 EVAL_SETS = ["test", "private_test"]
+
+
+def make_dataset(training_dir):
+    data_files = list(training_dir.glob("*.h5"))
+    label_files = list(training_dir.glob("*.xml"))
+    train_data = ...  # Filter out un-annotated data
+    labels = ...  # Create bounding boxes
+    return BoxDataset(train_data, labels)
 
 
 def evaluate_model(model, data_dir):
@@ -33,42 +42,34 @@ def main(data_dir, output_dir):
     start = time.time()
     model = train_model(training_dir)
     train_time = time.time() - start
-    print('-' * 10)
-    print('Evaluate the model')
+    print("-" * 10)
+    print("Evaluate the model")
     start = time.time()
     res = {}
     for eval_set in EVAL_SETS:
         res[eval_set] = evaluate_model(model, data_dir / eval_set)
     test_time = time.time() - start
-    print('-' * 10)
+    print("-" * 10)
     duration = train_time + test_time
-    print(f'Completed Prediction. Total duration: {duration}')
+    print(f"Completed Prediction. Total duration: {duration}")
 
-    with open(output_dir / 'metadata.json', 'w+') as f:
+    with open(output_dir / "metadata.json", "w+") as f:
         json.dump(dict(train_time=train_time, test_time=test_time), f)
     for eval_set in EVAL_SETS:
-        with open(output_dir / f'{eval_set}_predictions.xml', 'w+') as f:
-            ... # TODO: dump to XML res[eval_set]
+        with open(output_dir / f"{eval_set}_predictions.xml", "w+") as f:
+            ...  # TODO: dump to XML res[eval_set]
     print()
-    print('Ingestion Program finished. Moving on to scoring')
+    print("Ingestion Program finished. Moving on to scoring")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import argparse
-    parser = argparse.ArgumentParser(
-        description='Ingestion program for codabench'
-    )
+
+    parser = argparse.ArgumentParser(description="Ingestion program for codabench")
+    parser.add_argument("--data-dir", type=str, default="/app/input_data", help="")
+    parser.add_argument("--output-dir", type=str, default="/app/output", help="")
     parser.add_argument(
-        '--data-dir', type=str, default='/app/input_data',
-        help=''
-    )
-    parser.add_argument(
-        '--output-dir', type=str, default='/app/output',
-        help=''
-    )
-    parser.add_argument(
-        '--submission-dir', type=str, default='/app/ingested_program',
-        help=''
+        "--submission-dir", type=str, default="/app/ingested_program", help=""
     )
 
     args = parser.parse_args()
