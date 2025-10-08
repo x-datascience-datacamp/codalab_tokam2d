@@ -17,7 +17,7 @@ class XMLLoader:
     def __call__(self):
         tree = parse(self.path)
         root = tree.getroot()
-        return dict(self.xml_to_tv_tensor(element for element in root.findall("image")))
+        return dict(self.xml_to_tv_tensor(element) for element in root.findall("image"))
 
     def xml_to_tv_tensor(self, element: Element) -> tuple[int, BoundingBoxes]:
         width = int(element.attrib["width"])
@@ -33,13 +33,13 @@ class XMLLoader:
         return frame_index, bbox_tensor
 
     @staticmethod
-    def xml_to_bbox(self, element: Element) -> torch.Tensor:
+    def xml_to_bbox(element: Element) -> list[float]:
         info_dict = element.attrib
         xmin = float(info_dict["xtl"])
         ymin = float(info_dict["ytl"])
         xmax = float(info_dict["xbr"])
         ymax = float(info_dict["ybr"])
-        return torch.tensor([xmin, ymin, xmax, ymax])
+        return [xmin, ymin, xmax, ymax]
 
 
 class TokamDataset(VisionDataset):
@@ -61,11 +61,15 @@ class TokamDataset(VisionDataset):
         self.load_images()
 
     def load_images(self):
-        data_files = list(self.root.glob("*.h5"))
-        file_path = data_files[-1]
+        data_files = list(self.root.glob("*.h5"))[-1]
+        file_path = data_files
         with h5py.File(file_path) as f:
             self.images = torch.tensor(
-                [image for i, image in f["density"] if i in self.annotation_dict]
+                [
+                    image
+                    for i, image in enumerate(f["density"])
+                    if i in self.annotation_dict
+                ]
             )
 
         self.num_frames = self.images.shape[0]
@@ -73,9 +77,9 @@ class TokamDataset(VisionDataset):
         self.image_height = self.images.shape[1]
 
     def extract_annotations(self):
-        label_files = list(self.root.glob("*.xml"))
+        label_files = list(self.root.glob("*.xml"))[-1]
         self.annotation_dict = XMLLoader(label_files)()
-        self.annotations = torch.tensor(self.annotation_dict.values())
+        self.annotations = list(self.annotation_dict.values())
 
     def __getitem__(self, index: int):
         return self.images[index], self.annotations[index]
@@ -93,12 +97,14 @@ def make_dataset(training_dir):
 
 def train_model(training_dir):
     train_data = make_dataset(training_dir)
-    train_dataloader = torch.dataset.DataLoader(train_data, batch_size=4)
+    train_dataloader = torch.utils.data.DataLoader(train_data, batch_size=4)
 
     model = fasterrcnn_resnet50_fpn()
     model.train()
 
     optimizer = torch.optim.SGD(model.parameters())
+
+    max_epochs = 3
 
     for _ in range(max_epochs):
         for X, y in train_dataloader:
