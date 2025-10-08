@@ -11,7 +11,7 @@ from torchvision.tv_tensors import BoundingBoxes
 
 
 class XMLLoader:
-    def __init__(self, path: Path, image_width: int, image_height: int):
+    def __init__(self, path: Path):
         self.path = path
 
     def __call__(self):
@@ -51,7 +51,6 @@ class TokamDataset(VisionDataset):
         target_transform: Optional[Callable] = None,
     ) -> None:
         super().__init__(
-            self,
             root=root,
             transforms=transforms,
             transform=transform,
@@ -86,6 +85,9 @@ class TokamDataset(VisionDataset):
 
 
 def make_dataset(training_dir):
+    print()
+    print(training_dir)
+    print()
     return TokamDataset(training_dir)
 
 
