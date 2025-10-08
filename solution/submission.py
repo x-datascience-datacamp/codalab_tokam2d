@@ -1,10 +1,31 @@
 from pathlib import Path
 from typing import Callable, Optional
+from xml.etree.ElementTree import Element
 
 import h5py
 import torch
 from torchvision.datasets.vision import VisionDataset
 from torchvision.models.detection import fasterrcnn_resnet50_fpn
+from torchvision.tv_tensors import BoundingBoxes
+
+
+class XmlLoader:
+    def __init__(self, path: Path, image_width: int, image_height: int):
+        self.path = path
+
+    def __call__(self):
+        pass
+
+    def xml_to_tv_tensor(self, element: Element) -> BoundingBoxes:
+        pass
+
+    def xml_to_bbox(self, element: Element) -> torch.Tensor:
+        info_dict = element.attrib
+        xmin = float(info_dict["xtl"])
+        ymin = float(info_dict["ytl"])
+        xmax = float(info_dict["xbr"])
+        ymax = float(info_dict["ybr"])
+        return torch.tensor([xmin, ymin, xmax, ymax])
 
 
 class TokamDataset(VisionDataset):
@@ -23,8 +44,8 @@ class TokamDataset(VisionDataset):
             target_transform=target_transform,
         )
 
-        self.load_images()
         self.extract_annotations()
+        self.load_images()
 
     def load_images(self):
         data_files = list(self.root.glob("*.h5"))
