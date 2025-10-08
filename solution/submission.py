@@ -66,11 +66,13 @@ class TokamDataset(VisionDataset):
         file_path = data_files
         with h5py.File(file_path) as f:
             self.images = torch.tensor(
-                [
-                    np.expand_dims(image, axis=0)
-                    for i, image in enumerate(f["density"])
-                    if i in self.annotation_dict
-                ]
+                np.array(
+                    [
+                        np.expand_dims(image, axis=0)
+                        for i, image in enumerate(f["density"])
+                        if i in self.annotation_dict
+                    ]
+                )
             )
 
         self.num_frames = self.images.shape[0]

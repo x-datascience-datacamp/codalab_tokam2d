@@ -10,14 +10,22 @@ import torch
 EVAL_SETS = ["test", "private_test"]
 
 
+def collate_fn(batch: torch.Tensor) -> torch.Tensor:
+    return tuple(zip(*batch))
+
+
 def evaluate_model(model, data_dir):
+    from submission import make_dataset
+
     eval_dataset = make_dataset(data_dir)
-    eval_dataloader = torch.DataLoader(eval_dataset, batch_size=4)
+    eval_dataloader = torch.utils.data.DataLoader(
+        eval_dataset, batch_size=4, collate_fn=collate_fn
+    )
     AP = 0
 
     model.eval()
     res = []
-    for X, y in eval_dataset:
+    for X, y in eval_dataloader:
         y_pred = model(X)
         # Check how to make this work
         res.extend(y_pred)
