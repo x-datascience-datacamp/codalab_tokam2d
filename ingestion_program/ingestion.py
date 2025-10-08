@@ -10,14 +10,6 @@ import torch
 EVAL_SETS = ["test", "private_test"]
 
 
-def make_dataset(training_dir):
-    data_files = list(training_dir.glob("*.h5"))
-    label_files = list(training_dir.glob("*.xml"))
-    train_data = ...  # Filter out un-annotated data
-    labels = ...  # Create bounding boxes
-    return BoxDataset(train_data, labels)
-
-
 def evaluate_model(model, data_dir):
     eval_dataset = make_dataset(data_dir)
     eval_dataloader = torch.DataLoader(eval_dataset, batch_size=4)
@@ -66,13 +58,26 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser(description="Ingestion program for codabench")
-    parser.add_argument("--data-dir", type=str, default="/app/input_data", help="")
-    parser.add_argument("--output-dir", type=str, default="/app/output", help="")
     parser.add_argument(
-        "--submission-dir", type=str, default="/app/ingested_program", help=""
+        "--data-dir",
+        type=str,
+        default="/app/input_data",
+        help="",
+    )
+    parser.add_argument(
+        "--output-dir",
+        type=str,
+        default="/app/output",
+        help="",
+    )
+    parser.add_argument(
+        "--submission-dir",
+        type=str,
+        default="/app/ingested_program",
+        help="",
     )
 
     args = parser.parse_args()
     sys.path.append(args.submission_dir)
 
-    main(args.data_dir, args.output_dir)
+    main(Path(args.data_dir), Path(args.output_dir))
