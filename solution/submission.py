@@ -3,6 +3,7 @@ from typing import Callable, Optional
 from xml.etree.ElementTree import Element
 
 import h5py
+import numpy as np
 import torch
 from defusedxml.ElementTree import parse
 from torchvision.datasets.vision import VisionDataset
@@ -66,7 +67,7 @@ class TokamDataset(VisionDataset):
         with h5py.File(file_path) as f:
             self.images = torch.tensor(
                 [
-                    image
+                    np.expand_dims(image, axis=0)
                     for i, image in enumerate(f["density"])
                     if i in self.annotation_dict
                 ]
@@ -82,22 +83,28 @@ class TokamDataset(VisionDataset):
         self.annotations = list(self.annotation_dict.values())
 
     def __getitem__(self, index: int):
-        return self.images[index], self.annotations[index]
+        image = self.images[index].float()
+        boxes = self.annotations[index]
+        target = {"boxes": boxes, "labels": torch.ones(len(boxes), dtype=torch.int64)}
+        return image, target
 
     def __len__(self):
         return len(self.images)
 
 
 def make_dataset(training_dir):
-    print()
-    print(training_dir)
-    print()
     return TokamDataset(training_dir)
 
 
+def collate_fn(batch: torch.Tensor) -> torch.Tensor:
+    return tuple(zip(*batch))
+
+
 def train_model(training_dir):
-    train_data = make_dataset(training_dir)
-    train_dataloader = torch.utils.data.DataLoader(train_data, batch_size=4)
+    train_dataset = make_dataset(training_dir)
+    train_dataloader = torch.utils.data.DataLoader(
+        train_dataset, batch_size=4, collate_fn=collate_fn
+    )
 
     model = fasterrcnn_resnet50_fpn()
     model.train()
@@ -107,9 +114,9 @@ def train_model(training_dir):
     max_epochs = 3
 
     for _ in range(max_epochs):
-        for X, y in train_dataloader:
+        for images, targets in train_dataloader:
             optimizer.zero_grad()
-            loss_dict = model(X, y)
+            loss_dict = model(images, targets)
             losses = sum(loss for loss in loss_dict.values())
             optimizer.step()
 
