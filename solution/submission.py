@@ -65,28 +65,28 @@ class TokamDataset(VisionDataset):
         data_files = list(self.root.glob("*.h5"))
         file_path = data_files[-1]
         with h5py.File(file_path) as f:
-            self.images = torch.tensor(f["density"])
+            self.images = torch.tensor(
+                [image for i, image in f["density"] if i in self.annotation_dict]
+            )
 
         self.num_frames = self.images.shape[0]
         self.image_width = self.images.shape[2]
         self.image_height = self.images.shape[1]
 
     def extract_annotations(self):
-        self.label_files = list(self.root.glob("*.xml"))
+        label_files = list(self.root.glob("*.xml"))
+        self.annotation_dict = XMLLoader(label_files)()
+        self.annotations = torch.tensor(self.annotation_dict.values())
 
     def __getitem__(self, index: int):
-        pass
+        return self.images[index], self.annotations[index]
 
     def __len__(self):
         return len(self.images)
 
 
 def make_dataset(training_dir):
-    data_files = list(training_dir.glob("*.h5"))
-    label_files = list(training_dir.glob("*.xml"))
-    train_data = ...  # Filter out un-annotated data
-    labels = ...  # Create bounding boxes
-    return BoxDataset(train_data, labels)
+    return TokamDataset(training_dir)
 
 
 def train_model(training_dir):
