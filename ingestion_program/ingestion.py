@@ -114,5 +114,6 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     sys.path.append(args.submission_dir)
+    sys.path.append(Path(__file__).parent.resolve())
 
     main(Path(args.data_dir), Path(args.output_dir))
