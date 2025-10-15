@@ -2,12 +2,15 @@ from pathlib import Path
 from typing import Callable, Optional
 from xml.etree.ElementTree import Element, parse
 
+
 import h5py
 import numpy as np
 import torch
 from torchvision.datasets.vision import VisionDataset
 from torchvision.models.detection import fasterrcnn_resnet50_fpn
 from torchvision.tv_tensors import BoundingBoxes
+
+from tokam2d_utils import XMLLoader2
 
 
 class XMLLoader:
