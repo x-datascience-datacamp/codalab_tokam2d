@@ -65,16 +65,17 @@ class TokamDataset(VisionDataset):
         data_files = list(self.root.glob("*.h5"))[-1]
         file_path = data_files
         with h5py.File(file_path) as f:
+            data = f["density"]
+            frame_indices = f["indices"]
             self.images = torch.tensor(
                 np.array(
                     [
                         np.expand_dims(image, axis=0)
-                        for i, image in enumerate(f["density"])
+                        for i, image in zip(frame_indices, data)
                         if i in self.annotation_dict
                     ]
                 )
             )
-
         self.num_frames = self.images.shape[0]
         self.image_width = self.images.shape[2]
         self.image_height = self.images.shape[1]
