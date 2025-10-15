@@ -2,12 +2,28 @@ import json
 import sys
 import time
 from pathlib import Path
+from xml.etree.ElementTree import Element, ElementTree
 
-import numpy as np
-import pandas as pd
 import torch
 
 EVAL_SETS = ["test", "private_test"]
+
+
+def dump_to_xml(y_pred, filepath):
+    root = Element("predictions")
+    for y_p in y_pred:
+        frame_idx = y_p["frame_index"]
+        frame_elem = Element("image", index=str(frame_idx))
+        for box, score in zip(y_p['boxes'], y_p['scores']):
+            box_elem = Element(
+                "box", score=str(score),
+                xtl=str(box[0]), ytl=str(box[1]),
+                xbr=str(box[2]), ybr=str(box[3]),
+            )
+            frame_elem.append(box_elem)
+        root.append(frame_elem)
+    tree = ElementTree(root)
+    tree.write(filepath)
 
 
 def collate_fn(batch: torch.Tensor) -> torch.Tensor:
@@ -19,16 +35,23 @@ def evaluate_model(model, data_dir):
 
     eval_dataset = make_dataset(data_dir)
     eval_dataloader = torch.utils.data.DataLoader(
-        eval_dataset, batch_size=4, collate_fn=collate_fn
+        eval_dataset, batch_size=2, collate_fn=collate_fn
     )
-    AP = 0
 
     model.eval()
     res = []
     for X, y in eval_dataloader:
-        y_pred = model(X)
+        with torch.no_grad():
+            y_pred = model(X)
+
+        # Add back frame index
+        y_pred = [
+            {**y_p, "frame_index": y_t["frame_index"]}
+            for y_p, y_t in zip(y_pred, y)
+        ]
         # Check how to make this work
         res.extend(y_pred)
+        break
 
     return res
 
@@ -53,11 +76,13 @@ def main(data_dir, output_dir):
     duration = train_time + test_time
     print(f"Completed Prediction. Total duration: {duration}")
 
+    # Write output files
+    output_dir.mkdir(parents=True, exist_ok=True)
     with open(output_dir / "metadata.json", "w+") as f:
         json.dump(dict(train_time=train_time, test_time=test_time), f)
     for eval_set in EVAL_SETS:
-        with open(output_dir / f"{eval_set}_predictions.xml", "w+") as f:
-            ...  # TODO: dump to XML res[eval_set]
+        filepath = output_dir / f"{eval_set}_predictions.xml"
+        dump_to_xml(res[eval_set], filepath)
     print()
     print("Ingestion Program finished. Moving on to scoring")
 
@@ -65,7 +90,9 @@ def main(data_dir, output_dir):
 if __name__ == "__main__":
     import argparse
 
-    parser = argparse.ArgumentParser(description="Ingestion program for codabench")
+    parser = argparse.ArgumentParser(
+        description="Ingestion program for codabench"
+    )
     parser.add_argument(
         "--data-dir",
         type=str,

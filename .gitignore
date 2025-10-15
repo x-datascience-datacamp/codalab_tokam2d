@@ -4,3 +4,4 @@
 *.xml
 *.zip
 outputs/*
+score_outputs/*

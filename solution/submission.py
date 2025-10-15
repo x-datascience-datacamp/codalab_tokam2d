@@ -1,11 +1,10 @@
 from pathlib import Path
 from typing import Callable, Optional
-from xml.etree.ElementTree import Element
+from xml.etree.ElementTree import Element, parse
 
 import h5py
 import numpy as np
 import torch
-from defusedxml.ElementTree import parse
 from torchvision.datasets.vision import VisionDataset
 from torchvision.models.detection import fasterrcnn_resnet50_fpn
 from torchvision.tv_tensors import BoundingBoxes
@@ -24,6 +23,7 @@ class XMLLoader:
         width = int(element.attrib["width"])
         height = int(element.attrib["height"])
         frame_index = int(element.attrib["name"].split(".")[0])
+        frame_index = f"{self.path.stem}-{frame_index}"
 
         bbox_tensor = BoundingBoxes(
             [self.xml_to_bbox(xml_bbox) for xml_bbox in element],
@@ -62,33 +62,52 @@ class TokamDataset(VisionDataset):
         self.load_images()
 
     def load_images(self):
-        data_files = list(self.root.glob("*.h5"))[-1]
-        file_path = data_files
-        with h5py.File(file_path) as f:
-            data = f["density"]
-            frame_indices = f["indices"]
-            self.images = torch.tensor(
-                np.array(
-                    [
-                        np.expand_dims(image, axis=0)
-                        for i, image in zip(frame_indices, data)
-                        if i in self.annotation_dict
-                    ]
-                )
-            )
+        data_files = list(self.root.glob("*.h5"))
+        self.images = []
+        for file_path in data_files:
+            with h5py.File(file_path) as f:
+                data = f["density"]
+                frame_indices = [
+                    f'{file_path.stem}-{idx}' for idx in f["indices"]
+                ]
+                self.images.append(torch.tensor(
+                    np.array(
+                        [
+                            np.expand_dims(image, axis=0)
+                            for i, image in zip(frame_indices, data)
+                            if self.annotations is None or i in self.annotations
+                        ]
+                    )
+                ))
+                if self.annotations is None:
+                    self.idx_to_frame.extend(frame_indices)
+        self.images = torch.cat(self.images, dim=0)
         self.num_frames = self.images.shape[0]
         self.image_width = self.images.shape[2]
         self.image_height = self.images.shape[1]
 
     def extract_annotations(self):
-        label_files = list(self.root.glob("*.xml"))[-1]
-        self.annotation_dict = XMLLoader(label_files)()
-        self.annotations = list(self.annotation_dict.values())
+        try:
+            label_files = list(self.root.glob("*.xml"))[-1]
+            self.annotations = XMLLoader(label_files)()
+            self.idx_to_frame = list(self.annotations.keys())
+        except IndexError:
+            self.annotations = None
+            self.idx_to_frame = []
+            print("No label files found")
 
     def __getitem__(self, index: int):
+        frame_index = self.idx_to_frame[index]
+        if self.annotations is not None:
+            boxes = self.annotations[frame_index]
+        else:
+            boxes = []
         image = self.images[index].float()
-        boxes = self.annotations[index]
-        target = {"boxes": boxes, "labels": torch.ones(len(boxes), dtype=torch.int64)}
+        target = {
+            "boxes": boxes,
+            "labels": torch.ones(len(boxes), dtype=torch.int64),
+            "frame_index": frame_index,
+        }
         return image, target
 
     def __len__(self):
@@ -106,7 +125,7 @@ def collate_fn(batch: torch.Tensor) -> torch.Tensor:
 def train_model(training_dir):
     train_dataset = make_dataset(training_dir)
     train_dataloader = torch.utils.data.DataLoader(
-        train_dataset, batch_size=4, collate_fn=collate_fn
+        train_dataset, batch_size=1, collate_fn=collate_fn
     )
 
     model = fasterrcnn_resnet50_fpn()
@@ -114,14 +133,16 @@ def train_model(training_dir):
 
     optimizer = torch.optim.SGD(model.parameters())
 
-    max_epochs = 3
+    max_epochs = 1
 
     for _ in range(max_epochs):
         for images, targets in train_dataloader:
             optimizer.zero_grad()
             loss_dict = model(images, targets)
-            losses = sum(loss for loss in loss_dict.values())
+            full_loss = sum(loss for loss in loss_dict.values())
+            full_loss.backward()
             optimizer.step()
+            break
 
     model.eval()
     return model
