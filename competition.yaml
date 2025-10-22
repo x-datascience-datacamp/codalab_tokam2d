@@ -21,19 +21,11 @@ tasks:
     reference_data: dev_phase/reference_data/
     ingestion_program: ingestion_program/
     scoring_program: scoring_program/
-  - index: 1
-    name: Tokam2D Final Task
-    description: 'Train models with training data, test against an unseen test set'
-    input_data: final_phase/input_data/
-    reference_data: final_phase/reference_data/
-    ingestion_program: ingestion_program/
-    scoring_program: scoring_program/
 
 solutions:
   - index: 0
     tasks:
     - 0
-    - 1
     path: solution/
 
 
@@ -41,27 +33,20 @@ phases:
   - name: Development Phase
     description: 'Development phase: tune your models.'
     start: 10-07-2025
-    end: 10-31-2025
+    end: 11-15-2025
     tasks:
       - 0
-  - name: Testing Phase
-    description: 'Final Phase: test against unseen data.'
-    max_submissions: 1
-    start: 11-1-2025
-    end: 11-30-2025
-    tasks:
-      - 1
 
 leaderboards:
   - title: Results
     key: main
     columns:
       - title: Test AP50
-        key: ap50
+        key: test
         index: 0
         sorting: asc
       - title: Private Test AP50
-        key: ap50_private
+        key: private_test
         index: 1
         sorting: asc
         hidden: True
