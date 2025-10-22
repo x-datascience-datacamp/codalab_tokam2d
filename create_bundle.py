@@ -10,6 +10,7 @@ PHASE_DATA = Path("dev_phase")
 BUNDLE_FILES = [
     "competition.yaml",
     "logo.png",
+    "solution/submission.py",
 ]
 
 
