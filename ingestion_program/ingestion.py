@@ -31,9 +31,9 @@ def collate_fn(batch: torch.Tensor) -> torch.Tensor:
 
 
 def evaluate_model(model, data_dir):
-    from submission import make_dataset
+    from tokam2d_utils import TokamDataset
 
-    eval_dataset = make_dataset(data_dir)
+    eval_dataset = TokamDataset(data_dir)
     eval_dataloader = torch.utils.data.DataLoader(
         eval_dataset, batch_size=2, collate_fn=collate_fn
     )
