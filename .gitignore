@@ -3,5 +3,5 @@
 *.pyc
 *.xml
 *.zip
-outputs/*
-score_outputs/*
+ingestion_res/*
+scoring_res/*
