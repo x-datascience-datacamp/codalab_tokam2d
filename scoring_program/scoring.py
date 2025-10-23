@@ -146,10 +146,10 @@ def main(reference_dir, prediction_dir, output_dir):
         predictions = read_xml(prediction_dir / f'{eval_set}_predictions.xml')
         targets = read_xml(reference_dir / f'{eval_set}_labels.xml')
 
-        scores[eval_set] = compute_ap(
+        scores[eval_set] = float(compute_ap(
             predictions, targets,
             threshold=0.5
-        )
+        ))
 
     # Add train and test times in the score
     json_durations = (prediction_dir / 'metadata.json').read_text()
