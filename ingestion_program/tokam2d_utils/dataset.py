@@ -2,10 +2,9 @@ from pathlib import Path
 from typing import Callable, Optional
 
 import h5py
-import torch
 import numpy as np
+import torch
 from torchvision.datasets.vision import VisionDataset
-
 
 from .xml_loader import XMLLoader
 
@@ -17,10 +16,7 @@ class TokamDataset(VisionDataset):
         transforms: Optional[Callable] = None,
         include_unlabeled: bool = False,  # TODO: implement this
     ) -> None:
-        super().__init__(
-            root=root,
-            transforms=transforms
-        )
+        super().__init__(root=root, transforms=transforms)
         self.include_unlabeled = include_unlabeled
 
         self.extract_annotations()
@@ -32,25 +28,28 @@ class TokamDataset(VisionDataset):
         for file_path in data_files:
             with h5py.File(file_path) as f:
                 data = f["density"]
-                frame_indices = [
-                    f'{file_path.stem}-{idx}' for idx in f["indices"]
-                ]
-                self.images.append(torch.tensor(
-                    np.array(
-                        [
-                            np.expand_dims(image, axis=0)
-                            for i, image in zip(frame_indices, data)
-                            if (
-                                self.annotations is None
-                                or self.include_unlabeled
-                                or i in self.annotations
-                            )
-                        ]
+                frame_indices = [f"{file_path.stem}-{idx}" for idx in f["indices"]]
+                self.images.append(
+                    torch.tensor(
+                        np.array(
+                            [
+                                np.expand_dims(image, axis=0)
+                                for i, image in zip(frame_indices, data)
+                                if (
+                                    self.annotations is None
+                                    or self.include_unlabeled
+                                    or i in self.annotations
+                                )
+                            ]
+                        )
                     )
-                ))
+                )
                 if self.annotations is None:
                     self.idx_to_frame.extend(frame_indices)
         self.images = torch.cat(self.images, dim=0)
+        import ipdb
+
+        ipdb.set_trace()
         self.num_frames = self.images.shape[0]
         self.image_width = self.images.shape[2]
         self.image_height = self.images.shape[1]
