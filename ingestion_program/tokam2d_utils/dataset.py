@@ -47,9 +47,6 @@ class TokamDataset(VisionDataset):
                 if self.annotations is None:
                     self.idx_to_frame.extend(frame_indices)
         self.images = torch.cat(self.images, dim=0)
-        import ipdb
-
-        ipdb.set_trace()
         self.num_frames = self.images.shape[0]
         self.image_width = self.images.shape[2]
         self.image_height = self.images.shape[1]
