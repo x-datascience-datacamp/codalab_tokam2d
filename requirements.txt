@@ -1,3 +1,4 @@
-torchvision
-discopat
 h5py
+pandas
+discopat
+torchvision
