@@ -22,9 +22,6 @@ jobs:
                 echo "################################"
                 df -h
 
-                echo "Removing hosted toolcache..."
-                rm -rf /opt/hostedtoolcache || true
-
                 echo "Removing .NET..."
                 rm -rf /usr/share/dotnet || true
 
