@@ -20,7 +20,3 @@ RUN apt-get update && apt-get install -y \
 COPY requirements.txt /tmp/requirements.txt
 RUN pip install --no-cache-dir -r /tmp/requirements.txt
 
-# Hack to install local copy of discopat
-ADD ./discopat /tmp/discopat
-RUN pip install --no-cache-dir /tmp/discopat && rm -rf /tmp/discopat
-
