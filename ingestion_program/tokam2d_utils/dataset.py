@@ -54,6 +54,7 @@ class TokamDataset(VisionDataset):
         self.num_frames = self.images.shape[0]
         self.image_width = self.images.shape[2]
         self.image_height = self.images.shape[1]
+        print(f"Loaded {self.num_frames} frames.")
 
     def extract_annotations(self):
         try:
@@ -82,4 +83,4 @@ class TokamDataset(VisionDataset):
         return image, target
 
     def __len__(self):
-        return len(self.images)
+        return self.num_frames

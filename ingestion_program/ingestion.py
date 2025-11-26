@@ -16,9 +16,9 @@ def dump_to_xml(y_pred, filepath):
         frame_elem = Element("image", index=str(frame_idx))
         for box, score in zip(y_p['boxes'], y_p['scores']):
             box_elem = Element(
-                "box", score=str(score),
-                xtl=str(box[0]), ytl=str(box[1]),
-                xbr=str(box[2]), ybr=str(box[3]),
+                "box", score=str(score.item()),
+                xtl=str(box[0].item()), ytl=str(box[1].item()),
+                xbr=str(box[2].item()), ybr=str(box[3].item()),
             )
             frame_elem.append(box_elem)
         root.append(frame_elem)
@@ -51,7 +51,6 @@ def evaluate_model(model, data_dir):
         ]
         # Check how to make this work
         res.extend(y_pred)
-        break
 
     return res
 
