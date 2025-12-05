@@ -2,28 +2,10 @@ import json
 import sys
 import time
 from pathlib import Path
-from xml.etree.ElementTree import Element, ElementTree
 
 import torch
 
 EVAL_SETS = ["test", "private_test"]
-
-
-def dump_to_xml(y_pred, filepath):
-    root = Element("predictions")
-    for y_p in y_pred:
-        frame_idx = y_p["frame_index"]
-        frame_elem = Element("image", index=str(frame_idx))
-        for box, score in zip(y_p['boxes'], y_p['scores']):
-            box_elem = Element(
-                "box", score=str(score.item()),
-                xtl=str(box[0].item()), ytl=str(box[1].item()),
-                xbr=str(box[2].item()), ybr=str(box[3].item()),
-            )
-            frame_elem.append(box_elem)
-        root.append(frame_elem)
-    tree = ElementTree(root)
-    tree.write(filepath)
 
 
 def collate_fn(batch: torch.Tensor) -> torch.Tensor:
@@ -57,6 +39,7 @@ def evaluate_model(model, data_dir):
 
 def main(data_dir, output_dir):
     from submission import train_model
+    from tokam2d_utils.xml_loader import dump_to_xml
 
     training_dir = data_dir / "train"
 
