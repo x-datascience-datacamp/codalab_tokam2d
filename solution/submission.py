@@ -9,7 +9,7 @@ def collate_fn(batch: torch.Tensor) -> torch.Tensor:
 
 
 def train_model(training_dir):
-    train_dataset = TokamDataset(training_dir)
+    train_dataset = TokamDataset(training_dir, include_unlabeled=False)
     train_dataloader = torch.utils.data.DataLoader(
         train_dataset, batch_size=2, collate_fn=collate_fn, shuffle=True
     )
@@ -24,7 +24,7 @@ def train_model(training_dir):
 
     optimizer = torch.optim.AdamW(model.parameters())
 
-    max_epochs = 15
+    max_epochs = 1
 
     for i in range(max_epochs):
         print(f"Epoch {i+1}/{max_epochs}")
