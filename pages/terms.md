@@ -2,7 +2,7 @@
 
 ## 1. Eligibility
 
-This challenge is open to students enrolled in the MSc Datascience at École Polytechnique. Participation is voluntary and free of charge.
+This challenge is open to students enrolled in the MSc Datascience at IPP and UP-Saclay. Participation is voluntary and free of charge.
 
 Participants may compete individually, subject to the rules specified by the course instructors.
 

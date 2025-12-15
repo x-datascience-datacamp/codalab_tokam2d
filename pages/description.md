@@ -32,7 +32,7 @@ Below are displayed sample frames from the three annotated movies of the challen
 |--------------------------|----------------------------|----------------------------|
 | _blob_i_                 | _blob_dwi_                 | _turb_dwi_                 |
 
-Important:
+:warning: **Important:**
 Only _blob_i_, _blob_dwi_, and _turb_i_ may be used for training and validation.
 Frames from _turb_dwi_ must **not** be used during training. Submissions that incorporate _turb_dwi_ data into the training loop will be penalized.
 

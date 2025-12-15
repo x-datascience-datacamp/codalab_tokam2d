@@ -12,6 +12,9 @@ def collate_fn(batch: torch.Tensor) -> torch.Tensor:
 
 
 def train_model(training_dir):
+    # If you use `include_unlabeled=True`, you will have the frames from `turb_i`,
+    # with no annotations included in the dataloader. This can be used for domain
+    # adaptation, for instance using the skada library.
     train_dataset = TokamDataset(training_dir, include_unlabeled=False)
     train_dataloader = torch.utils.data.DataLoader(
         train_dataset, batch_size=2, collate_fn=collate_fn, shuffle=True
@@ -43,6 +46,8 @@ def train_model(training_dir):
             full_loss.backward()
             optimizer.step()
 
+    # Note that the model will be evaluated as is, and will be provided with
+    # batch on CPU.
     model.eval().to("cpu")
     return model
 
