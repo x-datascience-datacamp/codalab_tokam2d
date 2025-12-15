@@ -1,21 +1,49 @@
 # Seed:
 
-```
-class Model:
-    def fit(self, X_train, y_train):
-        """
-        This should handle the logic of training your model
-        :param X_train: np.array of training data
-        :param y_train: np.array of the same length as X_train. Contains classifications of X_train
-        """
-        pass
+```python
+import torch
+from torchvision.models.detection import fasterrcnn_resnet50_fpn
 
-    def predict(self, X_test):
-        """
-        This should handle making predictions with a trained model
-        :param X_test: np.array of testing data
-        :return: np.array of the same length as X_test containing predictions to each point in X_test
-        """
-        pass
+from tokam2d_utils import TokamDataset
+
+
+def collate_fn(batch: torch.Tensor) -> torch.Tensor:
+    return tuple(zip(*batch))
+
+
+def train_model(training_dir):
+    train_dataset = TokamDataset(training_dir, include_unlabeled=False)
+    train_dataloader = torch.utils.data.DataLoader(
+        train_dataset, batch_size=2, collate_fn=collate_fn, shuffle=True
+    )
+
+    if torch.cuda.is_available():
+        print("Using GPU")
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+
+    model = fasterrcnn_resnet50_fpn()
+    model.to(device)
+    model.train()
+
+    optimizer = torch.optim.AdamW(model.parameters())
+
+    max_epochs = 1
+
+    for i in range(max_epochs):
+        print(f"Epoch {i+1}/{max_epochs}")
+        for images, targets in train_dataloader:
+            images = [im.to(device) for im in images]
+            targets = [
+                {k: v.to(device) if isinstance(v, torch.Tensor) else v
+                 for k, v in t.items()} for t in targets
+            ]
+            optimizer.zero_grad()
+            loss_dict = model(images, targets)
+            full_loss = sum(loss for loss in loss_dict.values())
+            full_loss.backward()
+            optimizer.step()
+
+    model.eval().to("cpu")
+    return model
 
 ```
