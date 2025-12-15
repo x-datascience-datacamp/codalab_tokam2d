@@ -26,9 +26,11 @@ To help you assess generalization before submission, a limited number of frames 
 
 An additional, fully unannotated movie, **turb_i**, is also provided and may be used for unsupervised or self-supervised approaches.
 
-| ![image](turb_dwi_512.png) | ![image](blob_dwi_512.png) |
-|----------------------------|----------------------------|
-| Sample frame from the _turb_dwi_ movie | |
+Below are displayed sample frames from the three annotated movies of the challenge dataset.
+
+| ![image](blob_i_512.png) | ![image](blob_dwi_512.png) | ![image](turb_dwi_512.png) |
+|--------------------------|----------------------------|----------------------------|
+| _blob_i_                 | _blob_dwi_                 | _turb_dwi_                 |
 
 Important:
 Only _blob_i_, _blob_dwi_, and _turb_i_ may be used for training and validation.
