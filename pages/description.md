@@ -1,4 +1,4 @@
-<img width="500" height="499" alt="blob_dwi_512" src="https://github.com/user-attachments/assets/f75e3123-609e-4288-83e7-c902e0a25e05" /># Tokam2D - Structure detection in fusion plasma simulations in codabench
+# Tokam2D - Structure detection in fusion plasma simulations in codabench
 
 ## Context
 
@@ -26,7 +26,9 @@ To help you assess generalization before submission, a limited number of frames 
 
 An additional, fully unannotated movie, **turb_i**, is also provided and may be used for unsupervised or self-supervised approaches.
 
-![image](turb_dwi_512.png)
+| ![image](turb_dwi_512.png) | ![image](blob_dwi_512.png) |
+|----------------------------|----------------------------|
+| Sample frame from the _turb_dwi_ movie | |
 
 Important:
 Only _blob_i_, _blob_dwi_, and _turb_i_ may be used for training and validation.
