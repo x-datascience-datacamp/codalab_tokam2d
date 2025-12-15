@@ -42,7 +42,7 @@ Compared to standard IoU-based AP:
 
 - The matching criterion uses **IoMean** instead of IoU, allowing for more loosely defined and irregular blob contours.
 - Only a single threshold (IoMean ≥ 0.5) is used.
-- There is only one object class (blob_front).
+- There is only one object class (`blob_front`).
 
 This metric is designed to better reflect the physical ambiguity of blob boundaries in turbulent plasma simulations.
 
