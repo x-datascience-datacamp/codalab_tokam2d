@@ -6,8 +6,6 @@ This challenge is open to students enrolled in the MSc Datascience at École Pol
 
 Participants may compete individually, subject to the rules specified by the course instructors.
 
----
-
 ## 2. Data Usage
 
 The datasets provided for this challenge (including but not limited to *blob_i*, *blob_dwi*, *turb_i*, and *turb_dwi*) are intended **solely for educational and research purposes** within the scope of this course.
@@ -17,16 +15,12 @@ Participants agree to:
 - Not redistribute the data outside the course or upload it to public repositories.
 - Not attempt to identify, reverse-engineer, or misuse the data beyond its intended scientific context.
 
----
-
 ## 3. Training and Evaluation Restrictions
 
 Participants must comply with the following rules:
 - Only the datasets *blob_i*, *blob_dwi*, and *turb_i* may be used for training and validation.
 - The dataset *turb_dwi* is reserved for evaluation only and must not be used in the training loop.
 - Any attempt to directly or indirectly train on the evaluation data will result in penalties or disqualification.
-
----
 
 ## 4. Submission Rules
 
@@ -35,8 +29,6 @@ Participants must submit:
 - Any accompanying code or documentation as specified by the instructors.
 
 Submissions must be the original work of the participants.
-
----
 
 ## 5. Academic Integrity
 
@@ -49,8 +41,6 @@ Specifically:
 
 Violations of academic integrity rules may result in penalties, including disqualification or academic sanctions.
 
----
-
 ## 6. Intellectual Property
 
 Participants retain ownership of the code and models they develop as part of this challenge.
@@ -58,8 +48,6 @@ Participants retain ownership of the code and models they develop as part of thi
 By submitting their results, participants grant the course instructors and the hosting institution a **non-exclusive, royalty-free right** to:
 - Use the submissions for grading and evaluation.
 - Use anonymized results or visualizations for teaching, presentations, or future course materials.
-
----
 
 ## 7. Liability
 
@@ -69,8 +57,6 @@ The organizers are not responsible for:
 - Technical issues, data loss, or submission failures.
 - Any damages or losses arising from participation in the challenge.
 
----
-
 ## 8. Modification and Termination
 
 The organizers reserve the right to:
@@ -78,8 +64,6 @@ The organizers reserve the right to:
 - Terminate the challenge in case of technical issues or unforeseen circumstances.
 
 Any changes will be communicated to participants in a timely manner.
-
----
 
 ## 9. Acceptance of Terms
 
