@@ -44,6 +44,12 @@ The task is to **detect blobs in each frame** by predicting bounding boxes aroun
 
 Performance is evaluated using **AP50 based on Intersection-over-Mean (IoMean)**, a metric inspired by the COCO mean Average Precision.
 
+For two bounding boxes, IoMean is defined as:
+
+$$
+\text{IoMean} = \frac{2\text{Area of Intersection}}{\text{Area}_1 + \text{Area}_2}
+$$
+
 Compared to standard IoU-based AP:
 
 - The matching criterion uses **IoMean** instead of IoU, allowing for more loosely defined and irregular blob contours.
