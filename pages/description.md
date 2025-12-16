@@ -47,7 +47,7 @@ Performance is evaluated using **AP50 based on Intersection-over-Mean (IoMean)**
 For two bounding boxes, IoMean is defined as:
 
 $$
-\text{IoMean} = \frac{\text{Area of Intersection}}{\frac{\text{Area}_1 + \text{Area}_2}{2}}
+\text{IoMean} = \frac{2\text{Area of Intersection}}{\text{Area}_1 + \text{Area}_2}
 $$
 
 Compared to standard IoU-based AP:
