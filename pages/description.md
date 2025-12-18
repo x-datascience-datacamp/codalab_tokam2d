@@ -1,5 +1,22 @@
 # Tokam2D - Structure detection in fusion plasma simulations in codabench
 
+<div>
+<table style="width:100%; background-color:transparent;">
+  <tr style="background-color:transparent;">
+    <td align="left"; style="background-color:transparent; width: 40%;">
+        <a href="https://dataia.eu">
+            <img src="https://github.com/frcaud/codalab_tokam2d/raw/main/pages/DATAIA-h.png" width="450px"/>
+        </a>
+    </td>
+    <td align="right"; style="background-color:transparent; width: 40%;">
+        <a href="https://www.cea.fr/">
+            <img src="https://github.com/frcaud/codalab_tokam2d/raw/main/pages/logo_cea.png" width="200px"/>
+        </a>
+    </td>
+  </tr>
+ </table>
+</div>
+
 ## Context
 
 The objective of magnetic confinement fusion is to build a nuclear fusion energy reactor. To achieve this, fusion scientists confine a plasma (a gas of charged particles) using a strong magnetic field and heat it to temperatures at which nuclear fusion reactions can occur.
