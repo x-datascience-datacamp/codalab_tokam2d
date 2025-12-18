@@ -5,12 +5,12 @@
   <tr style="background-color:transparent;">
     <td align="left"; style="background-color:transparent; width: 40%;">
         <a href="https://dataia.eu">
-            <img src="https://github.com/frcaud/codalab_tokam2d/raw/main/pages/DATAIA-h.png" width="450px"/>
+            <img src="https://github.com/x-datascience-datacamp/codalab_tokam2d/raw/main/pages/DATAIA-h.png" width="450px"/>
         </a>
     </td>
     <td align="right"; style="background-color:transparent; width: 40%;">
         <a href="https://www.cea.fr/">
-            <img src="https://github.com/frcaud/codalab_tokam2d/raw/main/pages/logo_cea.png" width="200px"/>
+            <img src="https://github.com/x-datascience-datacamp/codalab_tokam2d/raw/main/pages/logo_cea.png" width="200px"/>
         </a>
     </td>
   </tr>
