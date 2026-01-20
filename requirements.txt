@@ -3,3 +3,4 @@ discopat
 torchvision
 transformers
 pillow
+timm
