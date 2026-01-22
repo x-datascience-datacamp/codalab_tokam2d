@@ -1,6 +1,1 @@
-h5py
-discopat
-torchvision
-transformers
-pillow
-timm
+tools/requirements.txt
