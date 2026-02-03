@@ -19,4 +19,5 @@ RUN apt-get update && apt-get install -y \
 # Place it in the same directory as this Dockerfile.
 COPY requirements.txt /tmp/requirements.txt
 RUN pip install --no-cache-dir -r /tmp/requirements.txt
+RUN pip install opencv-python-headless
 

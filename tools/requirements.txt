@@ -5,7 +5,6 @@ transformers
 pillow
 timm
 ultralytics
-opencv-python
 PyYAML
 scipy
 scikit-image
